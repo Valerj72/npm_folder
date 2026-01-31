@@ -1,30 +1,46 @@
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require("webpack");
+const ESLintPlugin = require('eslint-webpack-plugin');
+
+
 module.exports = {
-    mode: 'development',
+    module: 'development',
     entry: './src/index.js',
-    output: {
-      filename: 'main.js',
+    devtool: 'inline-source-map',
+    devServer: {
+       static: './dist',
+       port: 3001,
+       stats: {
+           children: false
+       },
+       contentBase: './dist',
+       hot: true,
     },
-   devServer: {
-     static: './dist',
-     port: 3001
-   },
+    output: {
+        filename: "main.js"
+    },
     plugins: [
-           new HtmlWebpackPlugin({
-        title: 'Development',
-      }, { template: "./src/index.html" }),
+        new MiniCssExtractPlugin(),
+        new ESLintPlugin(),
+        new HtmlWebpackPlugin( options: {
+            template: "./src/index.pug",
+            filename: "index.html"
+        })
     ],
     module: {
         rules: [
             {
-                 use: [{
-                     loader: HtmlWebpackPlugin.loader,
-                     options: {
-                         esModule: true,
-                     }
-                 }, 'css-loader'],
-                 test: /\.css$/
+                use: [{
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        esModule: true,
+                    }
+                }, 'css=loader'],
+                test: /\.css$/
+            },
+            {
+                test: /\.pug$/,
+                use: 'pug-loader'
             }
         ]
     }
